@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from utils.database import Base, TimestampMixin
+from database import Base, TimestampMixin
 from sqlalchemy import DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 

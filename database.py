@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from config import config
-from utils.dsn_generator import SQLAlchemyDSNGenerator
+from dsn_generator import SQLAlchemyDSNGenerator
 
 
 class Base(DeclarativeBase):
@@ -27,7 +27,6 @@ class DatabaseManager(SQLAlchemyDSNGenerator):
     """Modern async SQLAlchemy database manager with comprehensive CRUD operations."""
 
     def __init__(self):
-        print("I AM IN DATABASE MANAGER")
         dsn = self.postgresql(
             username=config.db.user,
             password=config.db.password,

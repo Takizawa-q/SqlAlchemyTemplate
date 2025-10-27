@@ -8,9 +8,11 @@ pyproject.toml
 README.md
 uv.lock
 main.py
+.gitignore
+config.py
 # C extensions
 *.so
-
+test.py
 # Distribution / packaging
 .Python
 build/

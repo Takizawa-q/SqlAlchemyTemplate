@@ -1,1 +1,1 @@
-from . import dsn_generator
+from .. import dsn_generator
