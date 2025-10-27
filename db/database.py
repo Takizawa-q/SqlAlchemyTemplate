@@ -1,30 +1,25 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Any, AsyncGenerator, Generic, Optional, TypeVar
+from typing import Any, AsyncGenerator, Optional
 
-from sqlalchemy import DateTime, Integer, func, text
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
                                     create_async_engine)
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase
 
 from config import config
-from dsn_generator import SQLAlchemyDSNGenerator
-
-
-class Base(DeclarativeBase):
-    """Base class for all models."""
-    pass
-
-
-class TimestampMixin:
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=func.now(), onupdate=func.now())
+from db.base import Base
+from db.dsn_generator import SQLAlchemyDSNGenerator
 
 
 class DatabaseManager(SQLAlchemyDSNGenerator):
     """Modern async SQLAlchemy database manager with comprehensive CRUD operations."""
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
         dsn = self.postgresql(
@@ -64,7 +59,7 @@ class DatabaseManager(SQLAlchemyDSNGenerator):
                 raise
 
     # Database lifecycle methods
-    async def init_db(self, base: Optional[DeclarativeBase] = None):
+    async def create_tables(self, base: Optional[DeclarativeBase] = None):
         """Create all database tables"""
         base = base or Base  # ✅ Use passed base or default to Base
         async with self.engine.begin() as conn:
@@ -88,4 +83,9 @@ class DatabaseManager(SQLAlchemyDSNGenerator):
         except SQLAlchemyError as e:
             raise
 
-db = DatabaseManager()
+
+def get_database() -> DatabaseManager:
+    return DatabaseManager()
+
+
+db = get_database()
